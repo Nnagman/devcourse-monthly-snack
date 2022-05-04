@@ -1,6 +1,7 @@
 package com.example.monthlysnack.repository;
 
 import com.example.monthlysnack.model.Customer;
+import com.example.monthlysnack.model.Email;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -54,7 +55,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
     }
 
     @Override
-    public Customer findByEmail(String email) {
+    public Customer findByEmail(Email email) {
         return jdbcTemplate.queryForObject(
                 "SELECT * FROM customer WHERE email = :email",
                 Collections.singletonMap("email", email),
@@ -92,7 +93,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
     private final RowMapper<Customer> rowMapper = (resultSet, rowNum) -> {
         var customerId = toUUID(resultSet.getBytes("customer_id"));
         var name = resultSet.getString("name");
-        var email = resultSet.getString("email");
+        var email = new Email(resultSet.getString("email"));
         var address = resultSet.getString("address");
         var postcode = resultSet.getString("postcode");
         var createdAt = toLocalDateTime(
@@ -106,6 +107,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
         Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("customerId", customer.getCustomerId().toString().getBytes());
         hashMap.put("name", customer.getName());
+        hashMap.put("email", customer.getEmail().getAddress());
         hashMap.put("address", customer.getAddress());
         hashMap.put("postcode", customer.getPostcode());
         hashMap.put("updatedAt", customer.getUpdatedAt());

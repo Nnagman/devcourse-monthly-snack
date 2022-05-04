@@ -1,6 +1,7 @@
 package com.example.monthlysnack.repository;
 
 import com.example.monthlysnack.model.Customer;
+import com.example.monthlysnack.model.Email;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public interface CustomerRepository {
 
     List<Customer> findByName(String name);
 
-    Customer findByEmail(String email);
+    Customer findByEmail(Email email);
 
     Customer update(Customer customer);
 

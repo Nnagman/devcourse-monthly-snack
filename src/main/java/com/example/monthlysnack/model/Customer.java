@@ -6,13 +6,13 @@ import java.util.UUID;
 public class Customer {
     private final UUID customerId;
     private final String name;
-    private final String email;
+    private final Email email;
     private final String address;
     private final String postcode;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
 
-    public Customer(UUID customerId, String name, String email,
+    public Customer(UUID customerId, String name, Email email,
                     String address, String postcode, LocalDateTime createdAt,
                     LocalDateTime updatedAt) {
         this.customerId = customerId;
@@ -32,12 +32,12 @@ public class Customer {
         return name;
     }
 
-    public String getEmail() {
+    public Email getEmail() {
         return email;
     }
 
     public String getAddress() {
-        return postcode;
+        return address;
     }
 
     public String getPostcode() {
