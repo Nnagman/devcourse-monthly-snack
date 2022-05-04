@@ -26,13 +26,15 @@ public class Email {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Email email = (Email) o;
+        System.out.println("equals() called");
         return address.equals(email.address);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(address);
+        var hash = Objects.hash(address);
+        System.out.println("hashcode() called - computed hashcode: " + hash);
+        return hash;
     }
 
     public String getAddress() {

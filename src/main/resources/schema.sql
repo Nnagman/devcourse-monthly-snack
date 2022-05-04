@@ -1,7 +1,8 @@
-DROP TABLE snack_order_item;
-DROP TABLE snack_order;
-DROP TABLE snack;
-DROP TABLE customer;
+# DROP TABLE snack_category;
+# DROP TABLE snack_order_item;
+# DROP TABLE snack_order;
+# DROP TABLE snack;
+# DROP TABLE customer;
 
 CREATE TABLE snack_category
 (
@@ -16,7 +17,7 @@ CREATE TABLE snack
     snack_id    binary(16)   NOT NULL PRIMARY KEY,
     name        varchar(100) NOT NULL UNIQUE,
     price       int          NOT NULL,
-    category_id varchar(100) NOT NULL,
+    category_id binary(16) NOT NULL,
     description varchar(500),
     updated_at  datetime(6)  NOT NULL,
     created_at  datetime(6)  NOT NULL,

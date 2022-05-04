@@ -2,6 +2,7 @@ package com.example.monthlysnack.repository;
 
 import com.example.monthlysnack.model.Customer;
 import com.example.monthlysnack.model.Email;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
     }
 
     @Override
-    public Customer insert(Customer customer) {
+    public Optional<Customer> insert(Customer customer) {
         var update = jdbcTemplate.update(
                 "INSERT INTO customer(customer_id, name, email, address, " +
                         "postcode, updated_at, created_at) VALUES(UUID_TO_BIN(:customerId), " +
@@ -27,10 +28,10 @@ public class CustomerJdbcRepository implements CustomerRepository {
                 toParamMap(customer));
 
         if (update == 0) {
-            return null;
+            return Optional.empty();
         }
 
-        return customer;
+        return Optional.of(customer);
     }
 
     @Override
@@ -39,11 +40,16 @@ public class CustomerJdbcRepository implements CustomerRepository {
     }
 
     @Override
-    public Customer findById(UUID customerId) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM customer WHERE customer_id = :customerId",
-                Collections.singletonMap("customerId", customerId),
-                rowMapper);
+    public Optional<Customer> findById(UUID customerId) {
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(
+                            "SELECT * FROM customer WHERE customer_id = UUID_TO_BIN(:customerId)",
+                            Collections.singletonMap("customerId", customerId.toString().getBytes()),
+                            rowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -55,15 +61,20 @@ public class CustomerJdbcRepository implements CustomerRepository {
     }
 
     @Override
-    public Customer findByEmail(Email email) {
-        return jdbcTemplate.queryForObject(
-                "SELECT * FROM customer WHERE email = :email",
-                Collections.singletonMap("email", email),
-                rowMapper);
+    public Optional<Customer> findByEmail(Email email) {
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(
+                            "SELECT * FROM customer WHERE email = :email",
+                            Collections.singletonMap("email", email.getAddress()),
+                            rowMapper));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
-    public Customer update(Customer customer) {
+    public Optional<Customer> update(Customer customer) {
         var update = jdbcTemplate.update(
                 "UPDATE customer SET name = :name, email = :email, " +
                         "address = :address, postcode = :postcode, " +
@@ -72,22 +83,22 @@ public class CustomerJdbcRepository implements CustomerRepository {
                 toParamMap(customer));
 
         if (update == 0) {
-            return null;
+            return Optional.empty();
         }
 
-        return customer;
+        return Optional.of(customer);
     }
 
     @Override
-    public Customer deleteById(Customer customer) {
-        var update = jdbcTemplate.update("DELETE FROM customer WHERE customer_id = :customerId",
+    public Optional<Customer> deleteById(Customer customer) {
+        var update = jdbcTemplate.update("DELETE FROM customer WHERE customer_id = UUID_TO_BIN(:customerId)",
                 toParamMap(customer));
 
         if (update == 0) {
-            return null;
+            return Optional.empty();
         }
 
-        return customer;
+        return Optional.of(customer);
     }
 
     private final RowMapper<Customer> rowMapper = (resultSet, rowNum) -> {
@@ -97,9 +108,9 @@ public class CustomerJdbcRepository implements CustomerRepository {
         var address = resultSet.getString("address");
         var postcode = resultSet.getString("postcode");
         var createdAt = toLocalDateTime(
-                resultSet.getTimestamp("createdAt"));
+                resultSet.getTimestamp("created_at"));
         var updatedAt = toLocalDateTime(
-                resultSet.getTimestamp("updatedAt"));
+                resultSet.getTimestamp("updated_at"));
         return new Customer(customerId, name, email, address, postcode, createdAt, updatedAt);
     };
 
