@@ -1,7 +1,7 @@
 package com.example.monthlysnack.repository;
 
 import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.Email;
+import com.example.monthlysnack.model.customer.Email;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -61,12 +61,12 @@ public class CustomerJdbcRepository implements CustomerRepository {
     }
 
     @Override
-    public Optional<Customer> findByEmail(Email email) {
+    public Optional<Customer> findByEmail(String email) {
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
                             "SELECT * FROM customer WHERE email = :email",
-                            Collections.singletonMap("email", email.getAddress()),
+                            Collections.singletonMap("email", email),
                             rowMapper));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -76,7 +76,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
     @Override
     public Optional<Customer> update(Customer customer) {
         var update = jdbcTemplate.update(
-                "UPDATE customer SET name = :name, email = :email, " +
+                "UPDATE customer SET name = :name" +
                         "address = :address, postcode = :postcode, " +
                         "updated_at = :updatedAt, created_at = :createdAt " +
                         "WHERE customer_id = UUID_TO_BIN(:customerId)",
@@ -104,7 +104,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
     private final RowMapper<Customer> rowMapper = (resultSet, rowNum) -> {
         var customerId = toUUID(resultSet.getBytes("customer_id"));
         var name = resultSet.getString("name");
-        var email = new Email(resultSet.getString("email"));
+        var email = resultSet.getString("email");
         var address = resultSet.getString("address");
         var postcode = resultSet.getString("postcode");
         var createdAt = toLocalDateTime(
@@ -118,7 +118,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
         Map<String, Object> hashMap = new HashMap<>();
         hashMap.put("customerId", customer.getCustomerId().toString().getBytes());
         hashMap.put("name", customer.getName());
-        hashMap.put("email", customer.getEmail().getAddress());
+        hashMap.put("email", customer.getEmail());
         hashMap.put("address", customer.getAddress());
         hashMap.put("postcode", customer.getPostcode());
         hashMap.put("updatedAt", customer.getUpdatedAt());

@@ -1,18 +1,22 @@
 package com.example.monthlysnack.model;
 
+import com.example.monthlysnack.model.customer.Address;
+import com.example.monthlysnack.model.customer.Email;
+import com.example.monthlysnack.model.customer.Postcode;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Customer {
     private final UUID customerId;
-    private final String name;
-    private final Email email;
-    private final String address;
-    private final String postcode;
+    private String name;
+    private final String email;
+    private String address;
+    private String postcode;
     private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    public Customer(UUID customerId, String name, Email email,
+    public Customer(UUID customerId, String name, String email,
                     String address, String postcode, LocalDateTime createdAt,
                     LocalDateTime updatedAt) {
         this.customerId = customerId;
@@ -32,7 +36,7 @@ public class Customer {
         return name;
     }
 
-    public Email getEmail() {
+    public String getEmail() {
         return email;
     }
 
@@ -50,5 +54,21 @@ public class Customer {
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changeAddress(String address) {
+        this.address = address;
+    }
+
+    public void changePostcode(String postcode) {
+        this.postcode = postcode;
+    }
+
+    public void changeUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

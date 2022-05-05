@@ -1,7 +1,7 @@
 package com.example.monthlysnack.repository;
 
 import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.Email;
+import com.example.monthlysnack.model.customer.Email;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public interface CustomerRepository {
 
     List<Customer> findByName(String name);
 
-    Optional<Customer> findByEmail(Email email);
+    Optional<Customer> findByEmail(String email);
 
     Optional<Customer> update(Customer customer);
 

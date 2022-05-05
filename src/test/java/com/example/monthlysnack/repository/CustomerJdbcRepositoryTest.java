@@ -1,7 +1,7 @@
 package com.example.monthlysnack.repository;
 
 import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.Email;
+import com.example.monthlysnack.model.customer.Email;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

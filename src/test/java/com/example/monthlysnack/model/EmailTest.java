@@ -1,5 +1,6 @@
 package com.example.monthlysnack.model;
 
+import com.example.monthlysnack.model.customer.Email;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

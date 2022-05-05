@@ -1,8 +1,10 @@
 package com.example.monthlysnack.service;
 
+import com.example.monthlysnack.exception.CustomerException;
+import com.example.monthlysnack.message.ErrorMessage;
 import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.CustomerDto;
-import com.example.monthlysnack.model.Email;
+import com.example.monthlysnack.model.CustomerDto.RegisterCustomer;
+import com.example.monthlysnack.model.CustomerDto.UpdateCustomer;
 import com.example.monthlysnack.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +21,19 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    public Optional<Customer> insert(CustomerDto customerDto) {
-        var email = new Email(customerDto.emailAddress());
-        var now = LocalDateTime.now();
-        Customer customer = new Customer(UUID.randomUUID(), customerDto.name(),
-                email, customerDto.address(), customerDto.postCode(), now, now);
-        return customerRepository.insert(customer);
+    public Optional<Customer> insert(RegisterCustomer registerCustomer) {
+        return customerRepository
+                .insert(registerCustomer.getCustomer());
     }
 
     public Optional<Customer> getById(UUID id) {
+        var customer = customerRepository.findById(id);
+
+        if (customer.isEmpty()) {
+            throw new CustomerException
+                    .CustomerNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND);
+        }
+
         return customerRepository.findById(id);
     }
 
@@ -35,26 +41,24 @@ public class CustomerService {
         return customerRepository.findByName(name);
     }
 
-    public Optional<Customer> getByEmail(String emailAddress) {
-        Email email = new Email(emailAddress);
+    public Optional<Customer> getByEmail(String email) {
         return customerRepository.findByEmail(email);
     }
 
-    public Optional<Customer> update(CustomerDto customerDto, UUID customerId) {
-        var customer = customerRepository.findById(customerId);
+    public Optional<Customer> update(UpdateCustomer updateCustomer) {
+        var customer
+                = customerRepository.findById(updateCustomer.customerId());
 
         if (customer.isEmpty()) {
-            return Optional.empty();
+            return customer;
         }
 
-        var email = new Email(customerDto.address());
+        customer.get().changeName(updateCustomer.name());
+        customer.get().changeAddress(updateCustomer.address());
+        customer.get().changePostcode(updateCustomer.postCode());
+        customer.get().changeUpdatedAt(LocalDateTime.now());
 
-        return customerRepository.update(
-                new Customer(customer.get().getCustomerId(), customerDto.name(), email,
-                        customerDto.emailAddress(), customerDto.postCode(),
-                        customer.get().getCreatedAt(),
-                        LocalDateTime.now())
-        );
+        return customerRepository.update(customer.get());
     }
 
     public Optional<Customer> delete(UUID customerId) {
