@@ -1,6 +1,6 @@
 package com.example.monthlysnack.service;
 
-import com.example.monthlysnack.exception.CustomerException;
+import com.example.monthlysnack.exception.CustomerException.CustomerNotRegisterException;
 import com.example.monthlysnack.message.ErrorMessage;
 import com.example.monthlysnack.model.Customer;
 import com.example.monthlysnack.model.CustomerDto.RegisterCustomer;
@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.example.monthlysnack.exception.CustomerException.CustomerNotFoundException;
+import static com.example.monthlysnack.exception.CustomerException.CustomerNotUpdateException;
+
 @Service
 public class CustomerService {
     private final CustomerRepository customerRepository;
@@ -21,17 +24,24 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    public Optional<Customer> insert(RegisterCustomer registerCustomer) {
-        return customerRepository
+    public Customer insert(RegisterCustomer registerCustomer) {
+        var customer = customerRepository
                 .insert(registerCustomer.getCustomer());
+
+        if (customer.isEmpty()) {
+            throw new CustomerNotRegisterException(
+                    ErrorMessage.CUSTOMER_NOT_REGISTER);
+        }
+
+        return customer.get();
     }
 
     public Optional<Customer> getById(UUID id) {
         var customer = customerRepository.findById(id);
 
         if (customer.isEmpty()) {
-            throw new CustomerException
-                    .CustomerNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND);
+            throw new CustomerNotFoundException(
+                    ErrorMessage.CUSTOMER_NOT_FOUND);
         }
 
         return customerRepository.findById(id);
@@ -45,12 +55,12 @@ public class CustomerService {
         return customerRepository.findByEmail(email);
     }
 
-    public Optional<Customer> update(UpdateCustomer updateCustomer) {
+    public Customer update(UpdateCustomer updateCustomer) {
         var customer
                 = customerRepository.findById(updateCustomer.customerId());
 
         if (customer.isEmpty()) {
-            return customer;
+            throw new CustomerNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND);
         }
 
         customer.get().changeName(updateCustomer.name());
@@ -58,16 +68,14 @@ public class CustomerService {
         customer.get().changePostcode(updateCustomer.postCode());
         customer.get().changeUpdatedAt(LocalDateTime.now());
 
-        return customerRepository.update(customer.get());
-    }
+        var updatedCustomer
+                = customerRepository.update(customer.get());
 
-    public Optional<Customer> delete(UUID customerId) {
-        var customer = customerRepository.findById(customerId);
-
-        if (customer.isEmpty()) {
-            return Optional.empty();
+        if (updatedCustomer.isEmpty()) {
+            throw new CustomerNotUpdateException(
+                    ErrorMessage.CUSTOMER_NOT_UPDATE);
         }
 
-        return customerRepository.deleteById(customer.get());
+        return updatedCustomer.get();
     }
 }

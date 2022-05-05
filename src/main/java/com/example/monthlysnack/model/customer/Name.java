@@ -9,7 +9,7 @@ public class Name {
 
     public Name(String name) {
         Assert.notNull(name, "이름은 null이 될 수 없습니다.");
-        Assert.isTrue(name.length() > 50,
+        Assert.isTrue(name.length() <= 50,
                 "이름은 50자리 이하여야 합니다.");
         this.name = name;
     }

@@ -1,7 +1,6 @@
 package com.example.monthlysnack.repository;
 
 import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.customer.Email;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,9 +28,9 @@ class CustomerJdbcRepositoryTest {
     void setup() {
         var now = LocalDateTime.now();
         customerList.add(new Customer(UUID.randomUUID(), "창호",
-                new Email("test1@gmail.com"), "대구시", "41232", now, now));
+                "test1@gmail.com", "대구시", "41232", now, now));
         customerList.add(new Customer(UUID.randomUUID(), "창호우",
-                new Email("test2@gmail.com"), "서울", "41232", now, now));
+                "test1@gmail.com", "서울", "41232", now, now));
     }
 
     @Test
@@ -40,7 +39,7 @@ class CustomerJdbcRepositoryTest {
     void insert() {
         for (Customer customer : customerList) {
             var insertedCustomer = customerRepository.insert(customer);
-            assertThat(insertedCustomer.isPresent()).isTrue();
+            assertThat(insertedCustomer).isPresent();
             assertThat(customer.getCustomerId()).isEqualTo(insertedCustomer.get().getCustomerId());
         }
     }
@@ -72,7 +71,7 @@ class CustomerJdbcRepositoryTest {
     void findAll() {
         var customers = customerRepository.findAll();
 
-        assertThat(customers.size()).isEqualTo(customerList.size());
+        assertThat(customers).hasSameSizeAs(customerList);
     }
 
     @Test
@@ -81,7 +80,7 @@ class CustomerJdbcRepositoryTest {
     void findById() {
         for (Customer customer : customerList) {
             var selectedCustomer = customerRepository.findById(customer.getCustomerId());
-            assertThat(selectedCustomer.isPresent()).isTrue();
+            assertThat(selectedCustomer).isPresent();
             assertThat(customer.getCustomerId()).isEqualTo(selectedCustomer.get().getCustomerId());
         }
     }
@@ -105,7 +104,7 @@ class CustomerJdbcRepositoryTest {
     void findByEmail() {
         for (Customer customer : customerList) {
             var selectedCustomer = customerRepository.findByEmail(customer.getEmail());
-            assertThat(selectedCustomer.isPresent()).isTrue();
+            assertThat(selectedCustomer).isPresent();
             assertThat(customer.getEmail()).isEqualTo(selectedCustomer.get().getEmail());
         }
     }
@@ -129,7 +128,7 @@ class CustomerJdbcRepositoryTest {
         );
 
         var updatedCustomer = customerRepository.update(customer);
-        assertThat(updatedCustomer.isPresent()).isTrue();
+        assertThat(updatedCustomer).isPresent();
         assertThat(updatedCustomer.get().getName()).isEqualTo("test");
         customerRepository.update(customerList.get(0));
     }
@@ -147,17 +146,5 @@ class CustomerJdbcRepositoryTest {
 
         assertThrows(DuplicateKeyException.class, () -> customerRepository.update(customer));
         customerRepository.update(customerList.get(0));
-    }
-
-    @Test
-    @Order(11)
-    @DisplayName("id가 일치하는 고객들을 삭제 할 수 있다.")
-    void deleteById() {
-        for (Customer customer : customerList) {
-            var deletedCustomer = customerRepository.deleteById(customer);
-
-            assertThat(deletedCustomer.isPresent()).isTrue();
-            assertThat(customer.getCreatedAt()).isEqualTo(deletedCustomer.get().getCreatedAt());
-        }
     }
 }

@@ -21,6 +21,4 @@ public interface CustomerRepository {
     Optional<Customer> findByEmail(String email);
 
     Optional<Customer> update(Customer customer);
-
-    Optional<Customer> deleteById(Customer customer);
 }

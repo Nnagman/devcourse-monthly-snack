@@ -89,18 +89,6 @@ public class CustomerJdbcRepository implements CustomerRepository {
         return Optional.of(customer);
     }
 
-    @Override
-    public Optional<Customer> deleteById(Customer customer) {
-        var update = jdbcTemplate.update("DELETE FROM customer WHERE customer_id = UUID_TO_BIN(:customerId)",
-                toParamMap(customer));
-
-        if (update == 0) {
-            return Optional.empty();
-        }
-
-        return Optional.of(customer);
-    }
-
     private final RowMapper<Customer> rowMapper = (resultSet, rowNum) -> {
         var customerId = toUUID(resultSet.getBytes("customer_id"));
         var name = resultSet.getString("name");

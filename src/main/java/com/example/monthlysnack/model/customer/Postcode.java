@@ -9,7 +9,7 @@ public class Postcode {
 
     public Postcode(String postcode) {
         Assert.notNull(postcode, "우편번호는 null이 될 수 없습니다.");
-        Assert.isTrue(postcode.length() != 5,
+        Assert.isTrue(postcode.length() == 5,
                 "우편번호는 5자리여야 합니다.");
         this.postcode = postcode;
     }

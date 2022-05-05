@@ -9,7 +9,7 @@ public class Address {
 
     public Address(String address) {
         Assert.notNull(address, "주소는 null이 될 수 없습니다.");
-        Assert.isTrue(address.length() > 100,
+        Assert.isTrue(address.length() <= 100,
                 "주소는 100자리 이하여야 합니다.");
         this.address = address;
     }

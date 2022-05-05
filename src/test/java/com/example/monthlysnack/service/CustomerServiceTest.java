@@ -1,8 +1,8 @@
 package com.example.monthlysnack.service;
 
-import com.example.monthlysnack.exception.CustomerException;
+import com.example.monthlysnack.exception.CustomerException.CustomerNotFoundException;
+import com.example.monthlysnack.exception.CustomerException.CustomerNotRegisterException;
 import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.CustomerDto;
 import com.example.monthlysnack.model.CustomerDto.RegisterCustomer;
 import com.example.monthlysnack.model.CustomerDto.UpdateCustomer;
 import com.example.monthlysnack.repository.CustomerRepository;
@@ -52,11 +52,23 @@ class CustomerServiceTest {
                 "06627"
         );
 
+        var customerId = UUID.randomUUID();
         updateCustomer = new UpdateCustomer(
-                UUID.randomUUID(),
+                customerId,
                 "창호",
                 "대륭서초타워",
                 "06627"
+        );
+
+        var now = LocalDateTime.now();
+        customer = new Customer(
+                customerId,
+                "창호",
+                "devcourser@grepp.com",
+                "대륭서초타워",
+                "06627",
+                now,
+                now
         );
     }
 
@@ -68,8 +80,7 @@ class CustomerServiceTest {
 
         var insertedCustomer = customerService.insert(registerCustomer);
 
-        assertThat(insertedCustomer.isPresent()).isTrue();
-        assertThat(insertedCustomer.get().getCustomerId()).isEqualTo(customer.getCustomerId());
+        assertThat(insertedCustomer.getCustomerId()).isEqualTo(customer.getCustomerId());
     }
 
     @Test
@@ -82,6 +93,14 @@ class CustomerServiceTest {
     }
 
     @Test
+    @DisplayName("고객 등록을 할 수 없다.")
+    void insertFail() {
+        given(customerRepository.insert(any())).willReturn(Optional.empty());
+        assertThrows(CustomerNotRegisterException.class,
+                () -> customerService.insert(registerCustomer));
+    }
+
+    @Test
     @DisplayName("id로 고객을 찾을 수 있다.")
     void getById() {
         var customerId = customer.getCustomerId();
@@ -89,7 +108,7 @@ class CustomerServiceTest {
 
         var selectedCustomer = customerService.getById(customerId);
 
-        assertThat(selectedCustomer.isPresent()).isTrue();
+        assertThat(selectedCustomer).isPresent();
         assertThat(selectedCustomer.get().getCustomerId()).isEqualTo(customerId);
     }
 
@@ -98,19 +117,19 @@ class CustomerServiceTest {
     void getByIdFindNothing() {
         var customerId = customer.getCustomerId();
         given(customerRepository.findById(customerId)).willReturn(Optional.empty());
-        assertThrows(CustomerException.CustomerNotFoundException.class, () -> customerService.getById(customerId));
+        assertThrows(CustomerNotFoundException.class, () -> customerService.getById(customerId));
     }
 
     @Test
     @DisplayName("특정 이름을 가진 고객들을 찾을 수 있다.")
     void getByName() {
-        customerList.add(registerCustomer.getCustomer());
-        var name = "창호";
+        customerList.add(customer);
+        var name = customer.getName();
         given(customerRepository.findByName(name)).willReturn(customerList);
 
         var customers = customerService.getByName(name);
 
-        assertThat(customers.size()).isEqualTo(customerList.size());
+        assertThat(customers).hasSameSizeAs(customerList);
         for (Customer selectedCustomer : customers) {
             assertThat(selectedCustomer.getName()).isEqualTo(name);
         }
@@ -124,26 +143,47 @@ class CustomerServiceTest {
 
         var customers = customerService.getByName(name);
 
-        assertThat(customers.size()).isEqualTo(0);
+        assertThat(customers).isEmpty();
+    }
+
+    @Test
+    @DisplayName("특정 이메일을 가진 고객들을 찾을 수 있다.")
+    void getByEmail() {
+        var email = customer.getEmail();
+        given(customerRepository.findByEmail(email)).willReturn(Optional.of(customer));
+
+        var selectedCustomer = customerService.getByEmail(email);
+
+        assertThat(selectedCustomer).isPresent();
+        assertThat(selectedCustomer.get().getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    @DisplayName("특정 이메일을 가진 고객은 없다.")
+    void getByEmailNotFound() {
+        var email = "test@test.com";
+        given(customerRepository.findByEmail(email)).willReturn(Optional.empty());
+
+        var selectedCustomer = customerService.getByEmail(email);
+
+        assertThat(selectedCustomer).isEmpty();
     }
 
     @Test
     @DisplayName("고객 정보를 수정 할 수 있다.")
     void update() {
-        var customerId = customer.getCustomerId();
-        given(customerRepository.findById(customerId)).willReturn(Optional.of(customer));
+        given(customerRepository.findById(updateCustomer.customerId())).willReturn(Optional.of(customer));
+        given(customerRepository.update(any())).willReturn(Optional.of(customer));
 
-        var selectedCustomer = customerService.getById(customerId);
+        var updatedCustomer = customerService.update(updateCustomer);
 
-        assertThat(selectedCustomer.isPresent()).isTrue();
-        assertThat(selectedCustomer.get().getCustomerId()).isEqualTo(customerId);
+        assertThat(updatedCustomer.getCustomerId()).isEqualTo(customer.getCustomerId());
     }
 
     @Test
-    @DisplayName("고객 정보를 업데이트 할 수 없다.")
-    void updateFail() {
-        var customerId = customer.getCustomerId();
-        given(customerRepository.findById(customerId)).willReturn(Optional.empty());
-        assertThrows(CustomerException.CustomerNotFoundException.class, () -> customerService.getById(customerId));
+    @DisplayName("존재하지 않는 고객을 수정 할 수 없다.")
+    void updateCustomerNotFound() {
+        given(customerRepository.findById(updateCustomer.customerId())).willReturn(Optional.empty());
+        assertThrows(CustomerNotFoundException.class, () -> customerService.update(updateCustomer));
     }
 }

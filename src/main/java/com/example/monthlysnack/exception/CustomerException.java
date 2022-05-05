@@ -10,4 +10,16 @@ public class CustomerException {
             super(message);
         }
     }
+
+    public static class CustomerNotRegisterException extends RuntimeException {
+        public CustomerNotRegisterException(String message) {
+            super(message);
+        }
+    }
+
+    public static class CustomerNotUpdateException extends RuntimeException {
+        public CustomerNotUpdateException(String message) {
+            super(message);
+        }
+    }
 }
