@@ -1,4 +1,4 @@
-package com.example.monthlysnack.model;
+package com.example.monthlysnack.model.customer;
 
 import com.example.monthlysnack.model.customer.Address;
 import com.example.monthlysnack.model.customer.Email;

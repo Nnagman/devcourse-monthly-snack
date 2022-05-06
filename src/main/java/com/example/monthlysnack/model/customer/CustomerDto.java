@@ -1,9 +1,4 @@
-package com.example.monthlysnack.model;
-
-import com.example.monthlysnack.model.customer.Address;
-import com.example.monthlysnack.model.customer.Email;
-import com.example.monthlysnack.model.customer.Name;
-import com.example.monthlysnack.model.customer.Postcode;
+package com.example.monthlysnack.model.customer;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

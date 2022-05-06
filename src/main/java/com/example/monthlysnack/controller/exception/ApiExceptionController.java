@@ -1,4 +1,4 @@
-package com.example.monthlysnack.controller.customer;
+package com.example.monthlysnack.controller.exception;
 
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

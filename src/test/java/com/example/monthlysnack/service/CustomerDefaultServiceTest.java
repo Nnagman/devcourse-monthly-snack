@@ -2,10 +2,10 @@ package com.example.monthlysnack.service;
 
 import com.example.monthlysnack.exception.CustomerException.CustomerNotFoundException;
 import com.example.monthlysnack.exception.CustomerException.CustomerNotRegisterException;
-import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.CustomerDto.RegisterCustomer;
-import com.example.monthlysnack.model.CustomerDto.UpdateCustomer;
-import com.example.monthlysnack.repository.CustomerRepository;
+import com.example.monthlysnack.model.customer.Customer;
+import com.example.monthlysnack.model.customer.CustomerDto.RegisterCustomer;
+import com.example.monthlysnack.model.customer.CustomerDto.UpdateCustomer;
+import com.example.monthlysnack.repository.customer.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -143,29 +143,6 @@ class CustomerDefaultServiceTest {
         var customers = customerDefaultService.getByName(name);
 
         assertThat(customers).isEmpty();
-    }
-
-    @Test
-    @DisplayName("특정 이메일을 가진 고객들을 찾을 수 있다.")
-    void getByEmail() {
-        var email = customer.getEmail();
-        given(customerRepository.findByEmail(email)).willReturn(Optional.of(customer));
-
-        var selectedCustomer = customerDefaultService.getByEmail(email);
-
-        assertThat(selectedCustomer).isPresent();
-        assertThat(selectedCustomer.get().getEmail()).isEqualTo(email);
-    }
-
-    @Test
-    @DisplayName("특정 이메일을 가진 고객은 없다.")
-    void getByEmailNotFound() {
-        var email = "test@test.com";
-        given(customerRepository.findByEmail(email)).willReturn(Optional.empty());
-
-        var selectedCustomer = customerDefaultService.getByEmail(email);
-
-        assertThat(selectedCustomer).isEmpty();
     }
 
     @Test

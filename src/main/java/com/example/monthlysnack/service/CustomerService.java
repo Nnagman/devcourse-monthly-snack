@@ -1,10 +1,9 @@
 package com.example.monthlysnack.service;
 
-import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.CustomerDto;
+import com.example.monthlysnack.model.customer.Customer;
+import com.example.monthlysnack.model.customer.CustomerDto;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface CustomerService {
@@ -14,8 +13,6 @@ public interface CustomerService {
     Customer getById(UUID id);
 
     List<Customer> getByName(String name);
-
-    Optional<Customer> getByEmail(String email);
 
     Customer update(CustomerDto.UpdateCustomer updateCustomer);
 }

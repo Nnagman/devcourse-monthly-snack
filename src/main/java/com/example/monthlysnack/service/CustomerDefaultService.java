@@ -2,15 +2,14 @@ package com.example.monthlysnack.service;
 
 import com.example.monthlysnack.exception.CustomerException.CustomerNotRegisterException;
 import com.example.monthlysnack.message.ErrorMessage;
-import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.CustomerDto.RegisterCustomer;
-import com.example.monthlysnack.model.CustomerDto.UpdateCustomer;
-import com.example.monthlysnack.repository.CustomerRepository;
+import com.example.monthlysnack.model.customer.Customer;
+import com.example.monthlysnack.model.customer.CustomerDto.RegisterCustomer;
+import com.example.monthlysnack.model.customer.CustomerDto.UpdateCustomer;
+import com.example.monthlysnack.repository.customer.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.monthlysnack.exception.CustomerException.CustomerNotFoundException;
@@ -56,11 +55,6 @@ public class CustomerDefaultService implements CustomerService {
     @Override
     public List<Customer> getByName(String name) {
         return customerRepository.findByName(name);
-    }
-
-    @Override
-    public Optional<Customer> getByEmail(String email) {
-        return customerRepository.findByEmail(email);
     }
 
     @Override

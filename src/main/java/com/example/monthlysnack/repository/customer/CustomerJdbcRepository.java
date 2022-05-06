@@ -1,7 +1,6 @@
-package com.example.monthlysnack.repository;
+package com.example.monthlysnack.repository.customer;
 
-import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.customer.Email;
+import com.example.monthlysnack.model.customer.Customer;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -58,19 +57,6 @@ public class CustomerJdbcRepository implements CustomerRepository {
                 "SELECT * FROM customer WHERE name = :name",
                 Collections.singletonMap("name", name),
                 rowMapper);
-    }
-
-    @Override
-    public Optional<Customer> findByEmail(String email) {
-        try {
-            return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(
-                            "SELECT * FROM customer WHERE email = :email",
-                            Collections.singletonMap("email", email),
-                            rowMapper));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
     }
 
     @Override

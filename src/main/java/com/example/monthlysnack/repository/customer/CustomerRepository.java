@@ -1,7 +1,6 @@
-package com.example.monthlysnack.repository;
+package com.example.monthlysnack.repository.customer;
 
-import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.model.customer.Email;
+import com.example.monthlysnack.model.customer.Customer;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,8 +16,6 @@ public interface CustomerRepository {
     Optional<Customer> findById(UUID customerId);
 
     List<Customer> findByName(String name);
-
-    Optional<Customer> findByEmail(String email);
 
     Optional<Customer> update(Customer customer);
 }

@@ -1,8 +1,8 @@
 package com.example.monthlysnack.controller.customer;
 
-import com.example.monthlysnack.model.Customer;
-import com.example.monthlysnack.repository.CustomerRepository;
+import com.example.monthlysnack.model.customer.Customer;
 import com.example.monthlysnack.service.CustomerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,20 +10,20 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static com.example.monthlysnack.model.customer.CustomerDto.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerMvcController.class)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -31,11 +31,11 @@ class CustomerMvcControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private CustomerService customerService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
-    private CustomerRepository customerRepository;
+    private CustomerService customerService;
 
     private final List<Customer> customers = new ArrayList<>();
 
@@ -64,7 +64,7 @@ class CustomerMvcControllerTest {
 
     @Test
     @DisplayName("고객 리스트 페이지를 불러 올 수 있다.")
-    public void getCustomersPage() throws Exception {
+    void getCustomersPage() throws Exception {
         given(this.customerService.getAll()).willReturn(customers);
         this.mockMvc.perform(get("/customers")).andExpect(status().isOk())
                 .andExpect(model().attributeExists("customers"))
@@ -73,7 +73,7 @@ class CustomerMvcControllerTest {
 
     @Test
     @DisplayName("이름이 일치하는 고객 리스트 페이지를 불러 올 수 있다.")
-    public void getCustomersPageByName() throws Exception {
+    void getCustomersPageByName() throws Exception {
         var filteredCustomers = customers.stream()
                 .filter(o -> "창호".equals(o.getName()))
                 .toList();
@@ -82,5 +82,45 @@ class CustomerMvcControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("customers"))
                 .andExpect(model().attribute("customers", filteredCustomers));
+    }
+
+    @Test
+    @DisplayName("아이디가 일치하는 고객 상세 페이지를 불러 올 수 있다.")
+    void getCustomerDetailPageById() throws Exception {
+        var customer = customers.get(0);
+        given(this.customerService.getById(customer.getCustomerId())).willReturn(customer);
+        this.mockMvc.perform(get("/customer/{id}", customer.getCustomerId()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("customer"))
+                .andExpect(model().attribute("customer", customer));
+    }
+
+    @Test
+    @DisplayName("고객의 정보 수정 페이지를 불러 올 수 있다.")
+    void getCustomerUpdatePage() throws Exception {
+        var customer = customers.get(0);
+        given(this.customerService.getById(customer.getCustomerId())).willReturn(customer);
+        this.mockMvc.perform(get("/customer/update/{id}", customer.getCustomerId()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("customer"))
+                .andExpect(model().attribute("customer", customer));
+    }
+
+    @Test
+    @DisplayName("고객의 정보 수정을 하고 확인 할 수 있다.")
+    void getUpdateCustomer() throws Exception {
+        var customer = customers.get(0);
+        var updateCustomer = new UpdateCustomer(
+                customer.getCustomerId(),
+                customer.getName(),
+                customer.getAddress(),
+                customer.getPostcode()
+        );
+        given(this.customerService.update(updateCustomer)).willReturn(customer);
+        this.mockMvc.perform(post("/customer/update")
+                        .content(objectMapper.writeValueAsString(updateCustomer))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/customer/" + customer.getCustomerId().toString()));
     }
 }

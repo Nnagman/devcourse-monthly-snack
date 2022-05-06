@@ -1,6 +1,7 @@
 package com.example.monthlysnack.repository;
 
-import com.example.monthlysnack.model.Customer;
+import com.example.monthlysnack.model.customer.Customer;
+import com.example.monthlysnack.repository.customer.CustomerRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -100,17 +101,6 @@ class CustomerJdbcRepositoryTest {
 
     @Test
     @Order(7)
-    @DisplayName("Email로 고객을 조회 할 수 있다.")
-    void findByEmail() {
-        for (Customer customer : customerList) {
-            var selectedCustomer = customerRepository.findByEmail(customer.getEmail());
-            assertThat(selectedCustomer).isPresent();
-            assertThat(customer.getEmail()).isEqualTo(selectedCustomer.get().getEmail());
-        }
-    }
-
-    @Test
-    @Order(8)
     @DisplayName("주어진 정보를 가진 고객을 찾을 수 없다.")
     void findEmpty() {
         assertThrows(EmptyResultDataAccessException.class,
@@ -118,7 +108,7 @@ class CustomerJdbcRepositoryTest {
     }
 
     @Test
-    @Order(9)
+    @Order(8)
     @DisplayName("고객 정보를 변경 할 수 있다.")
     void update() {
         var customer = customerList.get(0);
@@ -134,7 +124,7 @@ class CustomerJdbcRepositoryTest {
     }
 
     @Test
-    @Order(10)
+    @Order(9)
     @DisplayName("중복된 Email로 변경 할 수 없다.")
     void updateDuplicateEmail() {
         var customer = new Customer(

@@ -1,12 +1,13 @@
 package com.example.monthlysnack.controller.customer;
 
-import com.example.monthlysnack.model.CustomerDto.UpdateCustomer;
+import com.example.monthlysnack.model.customer.CustomerDto.UpdateCustomer;
 import com.example.monthlysnack.service.CustomerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
@@ -39,13 +40,6 @@ public class CustomerMvcController {
         return "customer/customer-detail";
     }
 
-    @GetMapping("/customer/{email}")
-    public String getCustomerDetailPage(Model model, @PathVariable("email") String email) {
-        var customer = customerService.getByEmail(email);
-        model.addAttribute("customer", customer);
-        return "customer/customer-detail";
-    }
-
     @GetMapping("/customer/update/{id}")
     public String getCustomerUpdatePage(Model model, @PathVariable("id") UUID id) {
         var customer = customerService.getById(id);
@@ -54,8 +48,8 @@ public class CustomerMvcController {
     }
 
     @PostMapping("/customer/update")
-    public String updateCustomer(Model model, UpdateCustomer updateCustomer) {
+    public String updateCustomer(@RequestBody UpdateCustomer updateCustomer) {
         var customer = customerService.update(updateCustomer);
-        return "redirect:/customer/" + customer.getCustomerId();
+        return "redirect:/customer/" + customer.getCustomerId().toString();
     }
 }
