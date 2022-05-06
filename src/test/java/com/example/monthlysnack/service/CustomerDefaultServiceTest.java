@@ -28,12 +28,12 @@ import static org.mockito.Mockito.mock;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-class CustomerServiceTest {
+class CustomerDefaultServiceTest {
     @InjectMocks
     CustomerRepository customerRepository;
 
     @Mock
-    CustomerService customerService;
+    CustomerDefaultService customerDefaultService;
 
     RegisterCustomer registerCustomer;
     UpdateCustomer updateCustomer;
@@ -43,7 +43,7 @@ class CustomerServiceTest {
     @BeforeEach
     void setup() {
         customerRepository = mock(CustomerRepository.class);
-        customerService = new CustomerService(customerRepository);
+        customerDefaultService = new CustomerDefaultService(customerRepository);
 
         registerCustomer = new RegisterCustomer(
                 "창호",
@@ -78,7 +78,7 @@ class CustomerServiceTest {
         given(customerRepository.insert(any()))
                 .willReturn(Optional.of(customer));
 
-        var insertedCustomer = customerService.insert(registerCustomer);
+        var insertedCustomer = customerDefaultService.insert(registerCustomer);
 
         assertThat(insertedCustomer.getCustomerId()).isEqualTo(customer.getCustomerId());
     }
@@ -89,7 +89,7 @@ class CustomerServiceTest {
         given(customerRepository.insert(any()))
                 .willThrow(DuplicateKeyException.class);
         assertThrows(DuplicateKeyException.class,
-                () -> customerService.insert(registerCustomer));
+                () -> customerDefaultService.insert(registerCustomer));
     }
 
     @Test
@@ -97,7 +97,7 @@ class CustomerServiceTest {
     void insertFail() {
         given(customerRepository.insert(any())).willReturn(Optional.empty());
         assertThrows(CustomerNotRegisterException.class,
-                () -> customerService.insert(registerCustomer));
+                () -> customerDefaultService.insert(registerCustomer));
     }
 
     @Test
@@ -106,10 +106,9 @@ class CustomerServiceTest {
         var customerId = customer.getCustomerId();
         given(customerRepository.findById(customerId)).willReturn(Optional.of(customer));
 
-        var selectedCustomer = customerService.getById(customerId);
+        var selectedCustomer = customerDefaultService.getById(customerId);
 
-        assertThat(selectedCustomer).isPresent();
-        assertThat(selectedCustomer.get().getCustomerId()).isEqualTo(customerId);
+        assertThat(selectedCustomer.getCustomerId()).isEqualTo(customerId);
     }
 
     @Test
@@ -117,7 +116,7 @@ class CustomerServiceTest {
     void getByIdFindNothing() {
         var customerId = customer.getCustomerId();
         given(customerRepository.findById(customerId)).willReturn(Optional.empty());
-        assertThrows(CustomerNotFoundException.class, () -> customerService.getById(customerId));
+        assertThrows(CustomerNotFoundException.class, () -> customerDefaultService.getById(customerId));
     }
 
     @Test
@@ -127,7 +126,7 @@ class CustomerServiceTest {
         var name = customer.getName();
         given(customerRepository.findByName(name)).willReturn(customerList);
 
-        var customers = customerService.getByName(name);
+        var customers = customerDefaultService.getByName(name);
 
         assertThat(customers).hasSameSizeAs(customerList);
         for (Customer selectedCustomer : customers) {
@@ -141,7 +140,7 @@ class CustomerServiceTest {
         var name = "test";
         given(customerRepository.findByName(name)).willReturn(List.of());
 
-        var customers = customerService.getByName(name);
+        var customers = customerDefaultService.getByName(name);
 
         assertThat(customers).isEmpty();
     }
@@ -152,7 +151,7 @@ class CustomerServiceTest {
         var email = customer.getEmail();
         given(customerRepository.findByEmail(email)).willReturn(Optional.of(customer));
 
-        var selectedCustomer = customerService.getByEmail(email);
+        var selectedCustomer = customerDefaultService.getByEmail(email);
 
         assertThat(selectedCustomer).isPresent();
         assertThat(selectedCustomer.get().getEmail()).isEqualTo(email);
@@ -164,7 +163,7 @@ class CustomerServiceTest {
         var email = "test@test.com";
         given(customerRepository.findByEmail(email)).willReturn(Optional.empty());
 
-        var selectedCustomer = customerService.getByEmail(email);
+        var selectedCustomer = customerDefaultService.getByEmail(email);
 
         assertThat(selectedCustomer).isEmpty();
     }
@@ -175,7 +174,7 @@ class CustomerServiceTest {
         given(customerRepository.findById(updateCustomer.customerId())).willReturn(Optional.of(customer));
         given(customerRepository.update(any())).willReturn(Optional.of(customer));
 
-        var updatedCustomer = customerService.update(updateCustomer);
+        var updatedCustomer = customerDefaultService.update(updateCustomer);
 
         assertThat(updatedCustomer.getCustomerId()).isEqualTo(customer.getCustomerId());
     }
@@ -184,6 +183,6 @@ class CustomerServiceTest {
     @DisplayName("존재하지 않는 고객을 수정 할 수 없다.")
     void updateCustomerNotFound() {
         given(customerRepository.findById(updateCustomer.customerId())).willReturn(Optional.empty());
-        assertThrows(CustomerNotFoundException.class, () -> customerService.update(updateCustomer));
+        assertThrows(CustomerNotFoundException.class, () -> customerDefaultService.update(updateCustomer));
     }
 }
