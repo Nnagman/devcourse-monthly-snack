@@ -6,6 +6,7 @@ import com.example.monthlysnack.model.customer.Customer;
 import com.example.monthlysnack.model.customer.CustomerDto.RegisterCustomer;
 import com.example.monthlysnack.model.customer.CustomerDto.UpdateCustomer;
 import com.example.monthlysnack.repository.customer.CustomerRepository;
+import com.example.monthlysnack.service.customer.CustomerDefaultService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

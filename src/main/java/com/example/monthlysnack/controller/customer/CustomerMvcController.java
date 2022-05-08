@@ -1,7 +1,7 @@
 package com.example.monthlysnack.controller.customer;
 
 import com.example.monthlysnack.model.customer.CustomerDto.UpdateCustomer;
-import com.example.monthlysnack.service.CustomerService;
+import com.example.monthlysnack.service.customer.CustomerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.example.monthlysnack.service;
+package com.example.monthlysnack.service.customer;
 
 import com.example.monthlysnack.exception.CustomerException.CustomerNotRegisterException;
 import com.example.monthlysnack.message.ErrorMessage;
@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import static com.example.monthlysnack.exception.CustomerException.CustomerNotFoundException;
 import static com.example.monthlysnack.exception.CustomerException.CustomerNotUpdateException;
+import static com.example.monthlysnack.message.ErrorMessage.*;
 
 @Service
 public class CustomerDefaultService implements CustomerService {
@@ -23,13 +24,13 @@ public class CustomerDefaultService implements CustomerService {
         this.customerRepository = customerRepository;
     }
 
+    @Override
     public Customer insert(RegisterCustomer registerCustomer) {
         var customer = customerRepository
                 .insert(registerCustomer.getCustomer());
 
         if (customer.isEmpty()) {
-            throw new CustomerNotRegisterException(
-                    ErrorMessage.CUSTOMER_NOT_REGISTER);
+            throw new CustomerNotRegisterException(CUSTOMER_NOT_REGISTER);
         }
 
         return customer.get();
@@ -45,8 +46,7 @@ public class CustomerDefaultService implements CustomerService {
         var customer = customerRepository.findById(id);
 
         if (customer.isEmpty()) {
-            throw new CustomerNotFoundException(
-                    ErrorMessage.CUSTOMER_NOT_FOUND);
+            throw new CustomerNotFoundException(CUSTOMER_NOT_FOUND);
         }
 
         return customer.get();
@@ -63,7 +63,7 @@ public class CustomerDefaultService implements CustomerService {
                 = customerRepository.findById(updateCustomer.customerId());
 
         if (customer.isEmpty()) {
-            throw new CustomerNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND);
+            throw new CustomerNotFoundException(CUSTOMER_NOT_FOUND);
         }
 
         customer.get().changeName(updateCustomer.name());
@@ -75,8 +75,7 @@ public class CustomerDefaultService implements CustomerService {
                 = customerRepository.update(customer.get());
 
         if (updatedCustomer.isEmpty()) {
-            throw new CustomerNotUpdateException(
-                    ErrorMessage.CUSTOMER_NOT_UPDATE);
+            throw new CustomerNotUpdateException(CUSTOMER_NOT_UPDATE);
         }
 
         return updatedCustomer.get();

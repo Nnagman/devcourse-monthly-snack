@@ -50,7 +50,8 @@ class CustomerJdbcRepositoryTest {
     @DisplayName("같은 ID를 가진 고객을 등록 할 수 없다.")
     void insertDuplicateId() {
         for (Customer customer : customerList) {
-            assertThrows(DuplicateKeyException.class, () -> customerRepository.insert(customer));
+            assertThrows(DuplicateKeyException.class,
+                    () -> customerRepository.insert(customer));
         }
     }
 

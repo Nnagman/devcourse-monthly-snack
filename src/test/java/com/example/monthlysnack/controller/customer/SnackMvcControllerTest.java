@@ -1,7 +1,7 @@
 package com.example.monthlysnack.controller.customer;
 
 import com.example.monthlysnack.model.customer.Customer;
-import com.example.monthlysnack.service.CustomerService;
+import com.example.monthlysnack.service.customer.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CustomerMvcController.class)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-class CustomerMvcControllerTest {
+class SnackMvcControllerTest {
     @Autowired
     private MockMvc mockMvc;
 

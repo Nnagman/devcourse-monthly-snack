@@ -1,12 +1,12 @@
-package com.example.monthlysnack.model;
+package com.example.monthlysnack.model.snack;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class SnackCategory {
     private final UUID snackCategoryId;
-    private final String name;
-    private final LocalDateTime updatedAt;
+    private String name;
+    private LocalDateTime updatedAt;
     private final LocalDateTime createdAt;
 
     public SnackCategory(UUID snackCategoryId, String name,
@@ -31,5 +31,13 @@ public class SnackCategory {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changeUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

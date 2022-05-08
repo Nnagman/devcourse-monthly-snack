@@ -1,14 +1,15 @@
-package com.example.monthlysnack.service;
+package com.example.monthlysnack.service.customer;
 
 import com.example.monthlysnack.model.customer.Customer;
 import com.example.monthlysnack.model.customer.CustomerDto;
+import com.example.monthlysnack.model.customer.CustomerDto.RegisterCustomer;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface CustomerService {
     List<Customer> getAll();
-    Customer insert(CustomerDto.RegisterCustomer registerCustomer);
+    Customer insert(RegisterCustomer registerCustomer);
 
     Customer getById(UUID id);
 

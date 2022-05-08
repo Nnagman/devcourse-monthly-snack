@@ -62,9 +62,8 @@ public class CustomerJdbcRepository implements CustomerRepository {
     @Override
     public Optional<Customer> update(Customer customer) {
         var update = jdbcTemplate.update(
-                "UPDATE customer SET name = :name" +
-                        "address = :address, postcode = :postcode, " +
-                        "updated_at = :updatedAt, created_at = :createdAt " +
+                "UPDATE customer SET name = :name, address = :address, " +
+                        "postcode = :postcode, updated_at = :updatedAt " +
                         "WHERE customer_id = UUID_TO_BIN(:customerId)",
                 toParamMap(customer));
 
